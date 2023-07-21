@@ -24,6 +24,8 @@ export const StyledContainer = styled((props: RowProps) => <Row {...props} />)`
   background: ${(props) => props.theme.color.background};
   height: 100%;
   overflow: auto;
+  justify-content: center;
+  align-items: center;
 `
 
 export const StyledLeftCol = styled((props: ColProps) => <Col {...props} />)`

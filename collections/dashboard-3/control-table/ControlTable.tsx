@@ -50,8 +50,8 @@ export const ControlTable: React.FC = () => {
   const handlePaginationChange = (newPage: number) => {
     setPage(newPage)
     setLoading(true)
-    const offset: number = (newPage - 1) * 6
-    const limit: number = (newPage - 1) * 6 + 6
+    const offset: number = (newPage - 1) * rowsPerPage
+    const limit: number = (newPage - 1) * rowsPerPage + rowsPerPage
     fetchData(offset, limit)
   }
 
@@ -210,8 +210,8 @@ export const ControlTable: React.FC = () => {
   ]
 
   useEffect(() => {
-    const offset: number = (page - 1) * 6
-    const limit: number = (page - 1) * 6 + 6
+    const offset: number = (page - 1) * rowsPerPage
+    const limit: number = (page - 1) * rowsPerPage + rowsPerPage
     fetchData(offset, limit)
   }, [])
 
