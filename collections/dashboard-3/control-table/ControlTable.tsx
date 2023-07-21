@@ -1,29 +1,21 @@
-import WaterfallChart from '@ant-design/plots/es/components/waterfall'
 import {
-  Button,
   Col,
   Row,
-  Space,
   Table,
   CheckableTag,
-  Tag,
-  Text,
   Modal,
   Notification,
   Select,
   Option,
 } from '@app/components'
-import { CONTROL_DASHBOARD_DATA } from '@app/data'
 import { IStore } from '@app/redux'
 import { ColumnsType, Call } from '@app/types'
-import { message, TablePaginationConfig } from 'antd'
+import { TablePaginationConfig } from 'antd'
 import { PhysicalCardOrder } from '../CallDetails'
 import { API } from 'libs/apis'
 import { NextRouter, useRouter } from 'next/router'
-import { MouseEventHandler } from 'react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import {BASE_COLORS} from '@app/theme'
 
 export const ControlTable: React.FC = () => {
   const { user } = useSelector((state: IStore) => state)
@@ -67,25 +59,23 @@ export const ControlTable: React.FC = () => {
   }
 
   // Function to render the call type column
-  function renderCallType(record: Call): JSX.Element {
+  function renderCallType(record: Call): string {
     let callType: string = ''
 
     if (record.call_type === 'voicemail') {
       callType = 'Voicemail'
     } else if (record.call_type === 'answered') {
       callType = 'Answered'
-      
     } else if (record.call_type === 'missed') {
       callType = 'Missed'
-
     }
 
-    return <span >{callType}</span>
+    return callType
   }
 
   // Function to render the direction column
-  function renderDirection(record: Call): JSX.Element {
-    return <span>{record.direction === 'inbound' ? 'Inbound' : 'Outbound'}</span>
+  function renderDirection(record: Call): string {
+    return record.direction === 'inbound' ? 'Inbound' : 'Outbound'
   }
 
   // Function to render the actions column
@@ -114,13 +104,13 @@ export const ControlTable: React.FC = () => {
   }
   // Options for filter select
   const options: {
-    value: string;
-    label: string;
+    value: string
+    label: string
   }[] = [
-    { value: "All", label: "All" },
-    { value: "Archived", label: "Archived" },
-    { value: "Unarchived", label: "Unarchived" },
-  ];
+    { value: 'All', label: 'All' },
+    { value: 'Archived', label: 'Archived' },
+    { value: 'Unarchived', label: 'Unarchived' },
+  ]
 
   const handleArchiveCallback = async (record: Call): Promise<void> => {
     // Handle archiving/unarchiving of the call
@@ -227,30 +217,30 @@ export const ControlTable: React.FC = () => {
 
   //filter calls based on chosen filter value
   const handleFilterChange = (selectedValue: unknown): void => {
-    if (typeof selectedValue === "string") {
-      setFilter(selectedValue);
+    if (typeof selectedValue === 'string') {
+      setFilter(selectedValue)
     }
     try {
-      let filterCalls;
+      let filterCalls
 
-      if (selectedValue === "All") {
-        filterCalls = calls;
+      if (selectedValue === 'All') {
+        filterCalls = calls
       } else {
         filterCalls = calls.filter((call) => {
-          if (selectedValue === "Archived") {
-            return call.is_archived;
-          } else if (selectedValue === "Unarchived") {
-            return !call.is_archived;
+          if (selectedValue === 'Archived') {
+            return call.is_archived
+          } else if (selectedValue === 'Unarchived') {
+            return !call.is_archived
           }
-          return false;
-        });
+          return false
+        })
       }
 
-      setfilteredCalls(filterCalls);
+      setfilteredCalls(filterCalls)
     } catch (error) {
-      alert(`Error fetching data:${error}`);
+      alert(`Error fetching data:${error}`)
     }
-  };
+  }
 
   return (
     <Row justify="center">

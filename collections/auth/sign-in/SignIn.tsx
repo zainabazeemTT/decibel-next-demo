@@ -1,4 +1,4 @@
-import { Col, Spacer, useForm , Row, Notification} from '@app/components'
+import { Col, Spacer, useForm, Notification } from '@app/components'
 import { SIGN_IN_FORM } from '@app/forms'
 import { DynamicForm } from '@app/modules'
 import { login, refresh } from '@app/redux'
@@ -10,8 +10,6 @@ import { CompanyLogo } from '~public'
 
 import {
   StyledContainer,
-  StyledEmptyBox,
-  StyledEmptyBoxRow,
   StyledFieldsCol,
   StyledLeftCol,
   StyledRow,
@@ -22,7 +20,7 @@ import { AxiosResponse } from 'axios'
 export const SignIn: React.FC = () => {
   const dispatch = useDispatch()
   const router = useRouter()
-  const timeOut =parseInt(process.env.TIME_OUT || '0');
+  const timeOut = parseInt(process.env.TIME_OUT || '0')
 
   const [form] = useForm()
 
@@ -60,7 +58,7 @@ export const SignIn: React.FC = () => {
           Notification({
             message: 'Logging in!',
             type: 'success',
-          });
+          })
           startRefreshTokenInterval(response)
 
           redirect()
@@ -78,19 +76,17 @@ export const SignIn: React.FC = () => {
 
   return (
     <StyledContainer align={'middle'}>
-        <Col span={12} xs={24} lg={12}>
-          <StyledFieldsCol>
-            <CompanyLogo />
-            <Spacer value={35} />
-            <StyledRow>
-              <StyledTitle level={2}>Sign in to your Account</StyledTitle>
-            </StyledRow>
-
-            <Spacer value={35} />
-
-            <DynamicForm fields={SIGN_IN_FORM} form={form} onSubmit={handleFormSubmit} />
-          </StyledFieldsCol>
-        </Col>
+      <Col span={12} xs={24} lg={12}>
+        <StyledFieldsCol>
+          <CompanyLogo />
+          <Spacer value={35} />
+          <StyledRow>
+            <StyledTitle level={2}>Sign in to your Account</StyledTitle>
+          </StyledRow>
+          <Spacer value={35} />
+          <DynamicForm fields={SIGN_IN_FORM} form={form} onSubmit={handleFormSubmit} />
+        </StyledFieldsCol>
+      </Col>
     </StyledContainer>
   )
 }
