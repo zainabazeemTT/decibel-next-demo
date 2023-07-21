@@ -13,16 +13,16 @@ export const ControlTable: React.FC = () => {
   const accessToken = user.accessToken
   //state variables
   const rowsPerPage: number = 6
-  const [filter, setFilter] = useState<string>('All')
+  const [filter, setFilter] = useState<string>('Select Filter')
   const [page, setPage] = useState<number>(1)
   const [calls, setCalls] = useState<Call[]>([])
   const [filteredcalls, setfilteredCalls] = useState<Call[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [totalcount, setTotalCount] = useState<number>(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const router: NextRouter = useRouter()
   const [selectedRecord, setSelectedRecord] = useState<Call | null>(null)
 
+  //setting the call record when modal opened
   const handleOnOpenModal = (record: Call) => {
     setSelectedRecord(record)
     setIsModalOpen(true)
@@ -51,7 +51,7 @@ export const ControlTable: React.FC = () => {
     showQuickJumper: false,
   }
 
- 
+ //Updating calls based on filter
   const handleUpdateCall = (record: Call): void => {
     setfilteredCalls((prevCalls) => {
       return prevCalls.map((call) => {
@@ -188,6 +188,7 @@ export const ControlTable: React.FC = () => {
   const handleFilterChange = (selectedValue: string): void => {
     try {
       let filterCalls
+      setFilter(selectedValue);
 
       switch (selectedValue) {
         case 'All':
@@ -200,7 +201,7 @@ export const ControlTable: React.FC = () => {
           filterCalls = calls.filter((call) => !call.is_archived)
           break
         default:
-          filterCalls = []
+          filterCalls = calls
           break
       }
       setfilteredCalls(filterCalls)
