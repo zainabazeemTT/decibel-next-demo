@@ -105,13 +105,18 @@ export const ControlTable: React.FC = () => {
     // Handle archiving/unarchiving of the call
 
     const updatedIsArchived = await API.CALL_REQUESTS.ARCHIVE(record.id, accessToken)
-    //console.log(JSON.stringify(updatedIsArchived))
     const call = updatedIsArchived.data
     handleUpdateCall(call)
     if (call.is_archived) {
-      alert('archived')
+      Notification({
+        message: 'Call archived!',
+        type: 'success',
+      });
     } else {
-      alert('unarchived')
+      Notification({
+        message: 'Call unarchived!',
+        type: 'success',
+      });
     }
   }
 

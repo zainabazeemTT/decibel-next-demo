@@ -1,4 +1,4 @@
-import { Col, Spacer, useForm , Row} from '@app/components'
+import { Col, Spacer, useForm , Row, Notification} from '@app/components'
 import { SIGN_IN_FORM } from '@app/forms'
 import { DynamicForm } from '@app/modules'
 import { login, refresh } from '@app/redux'
@@ -22,6 +22,7 @@ import { AxiosResponse } from 'axios'
 export const SignIn: React.FC = () => {
   const dispatch = useDispatch()
   const router = useRouter()
+  const timeOut =parseInt(process.env.TIME_OUT || '0');
 
   const [form] = useForm()
 
@@ -40,7 +41,7 @@ export const SignIn: React.FC = () => {
   const startRefreshTokenInterval = async (response: AxiosResponse<any, any>) => {
     setInterval(async () => {
       response = await refreshToken(response.data.access_token)
-    }, 10000)
+    }, timeOut)
   }
 
   const handleFormSubmit = async (type?: string) => {
@@ -56,6 +57,10 @@ export const SignIn: React.FC = () => {
               uid: response.data.user.id,
             }),
           )
+          Notification({
+            message: 'Logging in!',
+            type: 'success',
+          });
           startRefreshTokenInterval(response)
 
           redirect()

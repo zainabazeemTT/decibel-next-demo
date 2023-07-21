@@ -12,6 +12,7 @@ import {
   Title,
   Upload,
   Button,
+  Notification
 } from '@app/components'
 import { useState } from 'react'
 import { API } from 'libs/apis'
@@ -24,10 +25,11 @@ export const PhysicalCardOrder = ({ call, accessToken }) => {
   }
 
   const saveNote = async () => {
-    
-    console.log('Note to save:', noteText)
     const response= await API.CALL_REQUESTS.ADD_NOTE(call.id, noteText, accessToken)
-    console.log(response)
+    Notification({
+      message: 'Note Saved!',
+      type: 'success',
+    });
     
   };
 

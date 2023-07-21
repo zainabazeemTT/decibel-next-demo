@@ -17,7 +17,7 @@ export const API_ROUTES = {
 }
 
 export const CALL_REQUESTS = {
-  GET: async (offset: number, limit: number, accessToken:string) => {
+  GET: async (offset: number, limit: number, accessToken: string) => {
     const response: AxiosResponse<any, any> = await AXIOS.get(API_ROUTES.FETCH_CALLS(offset, limit), {
       withCredentials: false,
       headers: {
@@ -26,22 +26,20 @@ export const CALL_REQUESTS = {
     })
     return response
   },
-  ARCHIVE: async (callId: string, accessToken:string) => {
-    console.log("in", callId, accessToken, API_ROUTES.ARCHIVE_CALL(callId))
-    try {const response: AxiosResponse<any, any> = await AXIOS.put(API_ROUTES.ARCHIVE_CALL(callId), {},
-    {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+  ARCHIVE: async (callId: string, accessToken: string) => {
+    const response: AxiosResponse<any, any> = await AXIOS.put(
+      API_ROUTES.ARCHIVE_CALL(callId),
+      {},
+      {
+        withCredentials: false,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    })
-    console.log("res", response)
-    return response}
-    catch(e) {
-      console.log("errpr", e)
-    }
+    )
+    return response
   },
-  ADD_NOTE: async (callId: string, note: string, accessToken:string) => {
+  ADD_NOTE: async (callId: string, note: string, accessToken: string) => {
     const response: AxiosResponse<any, any> = await AXIOS.post(
       API_ROUTES.ADD_NOTE(callId),
       {
@@ -50,7 +48,7 @@ export const CALL_REQUESTS = {
       {
         withCredentials: false,
         headers: {
-          Authorization: `Bearer ${accessToken}`, //auth tolen
+          Authorization: `Bearer ${accessToken}`, 
         },
       },
     )
