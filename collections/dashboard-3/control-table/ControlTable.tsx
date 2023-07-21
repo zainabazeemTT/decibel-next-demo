@@ -1,13 +1,4 @@
-import {
-  Col,
-  Row,
-  Table,
-  CheckableTag,
-  Modal,
-  Notification,
-  Select,
-  Option,
-} from '@app/components'
+import { Col, Row, Table, CheckableTag, Modal, Notification, Select, Option } from '@app/components'
 import { IStore } from '@app/redux'
 import { ColumnsType, Call } from '@app/types'
 import { TablePaginationConfig } from 'antd'
@@ -30,8 +21,10 @@ export const ControlTable: React.FC = () => {
   const [totalcount, setTotalCount] = useState<number>(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router: NextRouter = useRouter()
+  const [selectedRecord, setSelectedRecord] = useState<Call | null>(null)
 
-  const handleOnOpenModal = () => {
+  const handleOnOpenModal = (record: Call) => {
+    setSelectedRecord(record)
     setIsModalOpen(true)
   }
 
@@ -58,19 +51,7 @@ export const ControlTable: React.FC = () => {
     showQuickJumper: false,
   }
 
-  // Function to render the actions column
-  function renderActions(record: Call): JSX.Element {
-    return (
-      <>
-        <CheckableTag onClick={handleOnOpenModal} checked>
-          Add Note
-        </CheckableTag>
-        <Modal title="Call" visible={isModalOpen} onCancel={handleOnCloseModal} footer={false}>
-          <PhysicalCardOrder call={record} accessToken={accessToken} />
-        </Modal>
-      </>
-    )
-  }
+ 
   const handleUpdateCall = (record: Call): void => {
     setfilteredCalls((prevCalls) => {
       return prevCalls.map((call) => {
@@ -122,35 +103,35 @@ export const ControlTable: React.FC = () => {
       dataIndex: 'call_type',
       title: 'Call Type',
       render: (_: Call, record: Call) => {
-        let callType: string = '';
-  
+        let callType: string = ''
+
         if (record.call_type === 'voicemail') {
-          callType = 'Voicemail';
+          callType = 'Voicemail'
         } else if (record.call_type === 'answered') {
-          callType = 'Answered';
+          callType = 'Answered'
         } else if (record.call_type === 'missed') {
-          callType = 'Missed';
+          callType = 'Missed'
         }
-  
-        return callType;
+
+        return callType
       },
     },
     {
       dataIndex: 'direction',
       title: 'Direction',
       render: (_: Call, record: Call) => {
-        return record.direction === 'inbound' ? 'Inbound' : 'Outbound';
+        return record.direction === 'inbound' ? 'Inbound' : 'Outbound'
       },
     },
     {
       dataIndex: 'duration',
       title: 'Duration',
       render: (duration: number) => {
-        const seconds = Math.floor(duration / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-  
-        return `${minutes} minutes ${remainingSeconds} seconds`;
+        const seconds = Math.floor(duration / 1000)
+        const minutes = Math.floor(seconds / 60)
+        const remainingSeconds = seconds % 60
+
+        return `${minutes} minutes ${remainingSeconds} seconds`
       },
     },
     {
@@ -179,7 +160,11 @@ export const ControlTable: React.FC = () => {
     {
       dataIndex: 'actions',
       title: 'Actions',
-      render: (_: Call, record: Call) => renderActions(record),
+      render: (_: Call, record: Call) => (
+        <CheckableTag onClick={() => handleOnOpenModal(record)} checked>
+          Add Note
+        </CheckableTag>
+      ),
     },
   ]
 
@@ -206,17 +191,17 @@ export const ControlTable: React.FC = () => {
 
       switch (selectedValue) {
         case 'All':
-          filterCalls = calls;
-          break;
+          filterCalls = calls
+          break
         case 'Archived':
-          filterCalls = calls.filter((call) => call.is_archived);
-          break;
+          filterCalls = calls.filter((call) => call.is_archived)
+          break
         case 'Unarchived':
-          filterCalls = calls.filter((call) => !call.is_archived);
-          break;
+          filterCalls = calls.filter((call) => !call.is_archived)
+          break
         default:
-          filterCalls = [];
-          break;
+          filterCalls = []
+          break
       }
       setfilteredCalls(filterCalls)
     } catch (error) {
@@ -224,7 +209,7 @@ export const ControlTable: React.FC = () => {
         message: 'Error fetching data',
         description: `Error: ${error}`,
         type: 'error',
-      });
+      })
     }
   }
 
@@ -241,6 +226,9 @@ export const ControlTable: React.FC = () => {
       </Col>
       <Col span={22}>
         <Table columns={columnsdata} dataSource={filteredcalls} scroll={{ x: true }} pagination={paginationConfig} />
+        <Modal title="Call" visible={isModalOpen} onCancel={handleOnCloseModal} footer={false}>
+          {selectedRecord && <PhysicalCardOrder call={selectedRecord} accessToken={accessToken} />}
+        </Modal>
       </Col>
     </Row>
   )
