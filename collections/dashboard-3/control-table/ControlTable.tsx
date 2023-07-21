@@ -1,5 +1,18 @@
 import WaterfallChart from '@ant-design/plots/es/components/waterfall'
-import { Button, Col, Row, Space, Table, CheckableTag, Tag, Text, Modal, Notification } from '@app/components'
+import {
+  Button,
+  Col,
+  Row,
+  Space,
+  Table,
+  CheckableTag,
+  Tag,
+  Text,
+  Modal,
+  Notification,
+  Select,
+  Option,
+} from '@app/components'
 import { CONTROL_DASHBOARD_DATA } from '@app/data'
 import { IStore } from '@app/redux'
 import { ColumnsType, Call } from '@app/types'
@@ -10,6 +23,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { MouseEventHandler } from 'react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import {BASE_COLORS} from '@app/theme'
 
 export const ControlTable: React.FC = () => {
   const { user } = useSelector((state: IStore) => state)
@@ -55,20 +69,18 @@ export const ControlTable: React.FC = () => {
   // Function to render the call type column
   function renderCallType(record: Call): JSX.Element {
     let callType: string = ''
-    let color = ''
 
     if (record.call_type === 'voicemail') {
       callType = 'Voicemail'
-      color = '#777'
     } else if (record.call_type === 'answered') {
       callType = 'Answered'
-      color = '#777'
+      
     } else if (record.call_type === 'missed') {
       callType = 'Missed'
-      color = '#777'
+
     }
 
-    return <span style={{ color }}>{callType}</span>
+    return <span >{callType}</span>
   }
 
   // Function to render the direction column
@@ -84,7 +96,7 @@ export const ControlTable: React.FC = () => {
           Add Note
         </CheckableTag>
         <Modal title="Call" visible={isModalOpen} onCancel={handleOnCloseModal} footer={false}>
-          <PhysicalCardOrder call={record} accessToken={accessToken}/>
+          <PhysicalCardOrder call={record} accessToken={accessToken} />
         </Modal>
       </>
     )
@@ -100,6 +112,15 @@ export const ControlTable: React.FC = () => {
       })
     })
   }
+  // Options for filter select
+  const options: {
+    value: string;
+    label: string;
+  }[] = [
+    { value: "All", label: "All" },
+    { value: "Archived", label: "Archived" },
+    { value: "Unarchived", label: "Unarchived" },
+  ];
 
   const handleArchiveCallback = async (record: Call): Promise<void> => {
     // Handle archiving/unarchiving of the call
@@ -111,22 +132,22 @@ export const ControlTable: React.FC = () => {
       Notification({
         message: 'Call archived!',
         type: 'success',
-      });
+      })
     } else {
       Notification({
         message: 'Call unarchived!',
         type: 'success',
-      });
+      })
     }
   }
 
   const formatDuration = (durationInMilliseconds: number): string => {
-    const seconds = Math.floor(durationInMilliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const seconds = Math.floor(durationInMilliseconds / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
 
-    return `${minutes} minutes ${remainingSeconds} seconds`;
-};
+    return `${minutes} minutes ${remainingSeconds} seconds`
+  }
 
   const formatDate = (Date: string): string => {
     const formattedDate = Date.slice(0, 10)
@@ -204,8 +225,44 @@ export const ControlTable: React.FC = () => {
     }
   }
 
+  //filter calls based on chosen filter value
+  const handleFilterChange = (selectedValue: unknown): void => {
+    if (typeof selectedValue === "string") {
+      setFilter(selectedValue);
+    }
+    try {
+      let filterCalls;
+
+      if (selectedValue === "All") {
+        filterCalls = calls;
+      } else {
+        filterCalls = calls.filter((call) => {
+          if (selectedValue === "Archived") {
+            return call.is_archived;
+          } else if (selectedValue === "Unarchived") {
+            return !call.is_archived;
+          }
+          return false;
+        });
+      }
+
+      setfilteredCalls(filterCalls);
+    } catch (error) {
+      alert(`Error fetching data:${error}`);
+    }
+  };
+
   return (
     <Row justify="center">
+      <Col span={22}>
+        <Select value={filter} onChange={(value: unknown) => handleFilterChange(value)}>
+          {options.map((option) => (
+            <Option key={option.value} value={option.value}>
+              {option.label}
+            </Option>
+          ))}
+        </Select>
+      </Col>
       <Col span={22}>
         <Table columns={columnsdata} dataSource={filteredcalls} scroll={{ x: true }} pagination={paginationConfig} />
       </Col>

@@ -5,6 +5,7 @@ import { ETheme } from './enums'
 
 export const BASE_COLORS = {
   error: '#D8382B',
+  success: '#19C2C4',
   primary: '#4C41F5',
   secondary: '#FFFFFF',
   white: '#fff',
