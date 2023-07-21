@@ -58,26 +58,6 @@ export const ControlTable: React.FC = () => {
     showQuickJumper: false,
   }
 
-  // Function to render the call type column
-  function renderCallType(record: Call): string {
-    let callType: string = ''
-
-    if (record.call_type === 'voicemail') {
-      callType = 'Voicemail'
-    } else if (record.call_type === 'answered') {
-      callType = 'Answered'
-    } else if (record.call_type === 'missed') {
-      callType = 'Missed'
-    }
-
-    return callType
-  }
-
-  // Function to render the direction column
-  function renderDirection(record: Call): string {
-    return record.direction === 'inbound' ? 'Inbound' : 'Outbound'
-  }
-
   // Function to render the actions column
   function renderActions(record: Call): JSX.Element {
     return (
@@ -131,14 +111,6 @@ export const ControlTable: React.FC = () => {
     }
   }
 
-  const formatDuration = (durationInMilliseconds: number): string => {
-    const seconds = Math.floor(durationInMilliseconds / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-
-    return `${minutes} minutes ${remainingSeconds} seconds`
-  }
-
   const formatDate = (Date: string): string => {
     const formattedDate = Date.slice(0, 10)
     return formattedDate
@@ -149,17 +121,37 @@ export const ControlTable: React.FC = () => {
     {
       dataIndex: 'call_type',
       title: 'Call Type',
-      render: (_: Call, record: Call) => renderCallType(record),
+      render: (_: Call, record: Call) => {
+        let callType: string = '';
+  
+        if (record.call_type === 'voicemail') {
+          callType = 'Voicemail';
+        } else if (record.call_type === 'answered') {
+          callType = 'Answered';
+        } else if (record.call_type === 'missed') {
+          callType = 'Missed';
+        }
+  
+        return callType;
+      },
     },
     {
       dataIndex: 'direction',
       title: 'Direction',
-      render: (_: Call, record: Call) => renderDirection(record),
+      render: (_: Call, record: Call) => {
+        return record.direction === 'inbound' ? 'Inbound' : 'Outbound';
+      },
     },
     {
       dataIndex: 'duration',
       title: 'Duration',
-      render: (duration: number) => formatDuration(duration),
+      render: (duration: number) => {
+        const seconds = Math.floor(duration / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+  
+        return `${minutes} minutes ${remainingSeconds} seconds`;
+      },
     },
     {
       dataIndex: 'from',
@@ -179,17 +171,9 @@ export const ControlTable: React.FC = () => {
       dataIndex: 'status',
       title: 'Status',
       render: (_: Call, record: Call) => (
-        <>
-          {record.is_archived ? (
-            <CheckableTag onClick={() => handleArchiveCallback(record)} checked={true}>
-              Archived
-            </CheckableTag>
-          ) : (
-            <CheckableTag onClick={() => handleArchiveCallback(record)} checked={false}>
-              Unarchived
-            </CheckableTag>
-          )}
-        </>
+        <CheckableTag onClick={() => handleArchiveCallback(record)} checked={record.is_archived}>
+          {record.is_archived ? 'Archived' : 'Unarchived'}
+        </CheckableTag>
       ),
     },
     {
@@ -216,36 +200,38 @@ export const ControlTable: React.FC = () => {
   }
 
   //filter calls based on chosen filter value
-  const handleFilterChange = (selectedValue: unknown): void => {
-    if (typeof selectedValue === 'string') {
-      setFilter(selectedValue)
-    }
+  const handleFilterChange = (selectedValue: string): void => {
     try {
       let filterCalls
 
-      if (selectedValue === 'All') {
-        filterCalls = calls
-      } else {
-        filterCalls = calls.filter((call) => {
-          if (selectedValue === 'Archived') {
-            return call.is_archived
-          } else if (selectedValue === 'Unarchived') {
-            return !call.is_archived
-          }
-          return false
-        })
+      switch (selectedValue) {
+        case 'All':
+          filterCalls = calls;
+          break;
+        case 'Archived':
+          filterCalls = calls.filter((call) => call.is_archived);
+          break;
+        case 'Unarchived':
+          filterCalls = calls.filter((call) => !call.is_archived);
+          break;
+        default:
+          filterCalls = [];
+          break;
       }
-
       setfilteredCalls(filterCalls)
     } catch (error) {
-      alert(`Error fetching data:${error}`)
+      Notification({
+        message: 'Error fetching data',
+        description: `Error: ${error}`,
+        type: 'error',
+      });
     }
   }
 
   return (
     <Row justify="center">
       <Col span={22}>
-        <Select value={filter} onChange={(value: unknown) => handleFilterChange(value)}>
+        <Select value={filter} onChange={(value: string) => handleFilterChange(value)}>
           {options.map((option) => (
             <Option key={option.value} value={option.value}>
               {option.label}
