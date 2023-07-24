@@ -51,7 +51,7 @@ export const ControlTable: React.FC = () => {
     showQuickJumper: false,
   }
 
- //Updating calls based on filter
+  //Updating calls based on filter
   const handleUpdateCall = (record: Call): void => {
     setfilteredCalls((prevCalls) => {
       return prevCalls.map((call) => {
@@ -79,16 +79,18 @@ export const ControlTable: React.FC = () => {
     const updatedIsArchived = await API.CALL_REQUESTS.ARCHIVE(record.id, accessToken)
     const call = updatedIsArchived.data
     handleUpdateCall(call)
-    if (call.is_archived) {
-      Notification({
-        message: 'Call archived!',
-        type: 'success',
-      })
-    } else {
-      Notification({
-        message: 'Call unarchived!',
-        type: 'success',
-      })
+    switch (call.is_archived) {
+      case true:
+        Notification({
+          message: 'Call archived!',
+          type: 'success',
+        })
+        break
+      default:
+        Notification({
+          message: 'Call unarchived!',
+          type: 'success',
+        })
     }
   }
 
@@ -105,12 +107,16 @@ export const ControlTable: React.FC = () => {
       render: (_: Call, record: Call) => {
         let callType: string = ''
 
-        if (record.call_type === 'voicemail') {
-          callType = 'Voicemail'
-        } else if (record.call_type === 'answered') {
-          callType = 'Answered'
-        } else if (record.call_type === 'missed') {
-          callType = 'Missed'
+        switch (record.call_type) {
+          case 'voicemail':
+            callType = 'Voicemail'
+            break
+          case 'answered':
+            callType = 'Answered'
+            break
+          case 'missed':
+            callType = 'Missed'
+            break
         }
 
         return callType
@@ -188,7 +194,7 @@ export const ControlTable: React.FC = () => {
   const handleFilterChange = (selectedValue: string): void => {
     try {
       let filterCalls
-      setFilter(selectedValue);
+      setFilter(selectedValue)
 
       switch (selectedValue) {
         case 'All':
